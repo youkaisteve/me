@@ -1,0 +1,15 @@
+*.class
+target/
+
+config
+scripts/modules/**
+runtime
+doc
+articles
+
+# IDEA metadata and output dirs
+*.iml
+*.ipr
+*.iws
+.idea/
+.Ds_store
