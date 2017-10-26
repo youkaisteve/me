@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+eureka:
+  instance:
+    hostname: registry
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://user:${REGISTRY_SERVER_PASSWORD:password}@registry:8761/eureka/
+security:
+  user:
+    password: password
