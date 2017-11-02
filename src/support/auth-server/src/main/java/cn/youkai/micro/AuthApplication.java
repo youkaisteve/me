@@ -9,7 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @date 2017/10/26.
  */
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class AuthApplication {
     public static void main(String[] args){
         SpringApplication.run(AuthApplication.class,args);
