@@ -1,0 +1,34 @@
+server:
+  port: 9001
+
+eureka:
+  instance:
+    hostname: registry
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://user:${REGISTRY_SERVER_PASSWORD:password}@registry:8761/eureka/
+
+config:
+  oauth2:
+    key-store: jwt.jks
+    secret-key: mySecretKey
+    alias: jwt
+
+security:
+  user:
+    password: none
+  oauth2:
+    resource:
+      filter-order: 3
+#      jwt:
+#        keyValue: |
+#          -----BEGIN PUBLIC KEY-----
+#          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgLJBfYa3uNgThal6K83p
+#          BZMW+Zaukty1owlokU0WCpI23+YDifBPG4GU8vKWO5Xwx5Kp1G9BwM1s91A9UXNg
+#          6+0e8v8wA2xfdnH8f5rWBTlpNj0vJSp4fSwC0EXMxk8p7AmkdEwR6Qc9GI/sUSj3
+#          F+kCpfw5MFw/+K7m7pMDx6UBlppcsio83I9oV+5Q8mhS2xLeT44RzKi0KCq8GhoF
+#          bkglgqUcWU9RmWcn94XYHxRzRnL0XvMgj6j9+o3MFUNDykO4SB5xlZb7jRPc1HkW
+#          9jnJAIOTg4cbgiK/zhs1n2VKn7H2QBo324FQfm4k/qLr0kSu2Z4MdOfBwowfv5FN
+#          hwIDAQAB
+#          -----END PUBLIC KEY-----

@@ -19,6 +19,7 @@
     <modules>
         <module>support/registry</module>
         <module>support/auth-server</module>
+        <module>serviceA</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
