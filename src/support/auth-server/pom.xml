@@ -12,7 +12,11 @@
 
     <artifactId>auth-server</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>../framework</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -47,6 +51,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.youkai</groupId>
+            <artifactId>framework</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
