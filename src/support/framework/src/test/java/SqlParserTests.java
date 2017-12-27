@@ -20,23 +20,28 @@ import java.util.List;
 public class SqlParserTests {
     @Test
     public void tableNamesTest() throws JSQLParserException {
-        SqlParser parser = new SqlParser();
-        parser.setStatement("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
-        List<String> tableNames = parser.getTableList();
+        List<String> tableNames = SqlParser.getTableList("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
         assertEquals("tab1", tableNames.get(0));
         assertEquals("tab2", tableNames.get(1));
     }
 
     @Test
     public void getBodyTest() throws JSQLParserException {
-        SqlParser parser = new SqlParser();
-        parser.setStatement("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
-        List<String> body = parser.getColumns();
+        List<String> body = SqlParser.getColumns("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
         List<String> expected = new ArrayList();
         expected.add("t1.a");
         expected.add("t2.b");
         expected.add("t2.c");
         assertEquals(expected, body);
+    }
+
+    @Test
+    public void print() throws JSQLParserException {
+        SqlParser.printSelect("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b where t1.a = 11");
+    }
+
+    private void getNextLngLat(double lng, double lat, double distance) {
+        
     }
 
 }
