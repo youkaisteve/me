@@ -1,10 +1,11 @@
 package cn.youkai.core.sqlparser;
 
-import cn.youkai.core.sqlparser.dto.EntityBase;
+import cn.youkai.core.sqlparser.dto.EFEntityBase;
+import cn.youkai.core.sqlparser.dto.EFTable;
+import cn.youkai.core.sqlparser.extend.TableFinder;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.*;
@@ -43,7 +44,8 @@ public class SqlParser {
             System.out.print("getOnExpression:");
             System.out.println(join.getOnExpression());
             System.out.print("getRightItem:");
-            System.out.println(join.getRightItem());
+            FromItem fromItemJoin = join.getRightItem();
+            System.out.println(String.format("%s,alias:%s", fromItemJoin, fromItemJoin.getAlias()));
         }
 
         List<SelectItem> selectItems = plainSelect.getSelectItems();
@@ -51,10 +53,12 @@ public class SqlParser {
         for (SelectItem item : selectItems) {
             if (item instanceof SelectExpressionItem) {
                 System.out.println(((SelectExpressionItem) item).getExpression());
+                System.out.println(((SelectExpressionItem) item).getAlias());
             }
         }
 
-        AndExpression whereExpression = (AndExpression)plainSelect.getWhere();
+//        AndExpression whereExpression = (AndExpression)plainSelect.getWhere();
+        Expression whereExpression = plainSelect.getWhere();
         System.out.println(whereExpression);
     }
 
@@ -62,8 +66,7 @@ public class SqlParser {
         Statement statement = CCJSqlParserUtil.parse(sqlStr);
         Select selectStatement = (Select) statement;
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
-        List<String> tables = tablesNamesFinder.getTableList(selectStatement);
-        return tables;
+        return tablesNamesFinder.getTableList(selectStatement);
     }
 
     public static List<String> getColumns(String sqlStr) throws JSQLParserException {
@@ -96,8 +99,16 @@ public class SqlParser {
         return columns;
     }
 
-//    public static List<EntityBase> extractDatabaseObjects(String sqlStr) throws JSQLParserException {
-//        List<EntityBase> result = new ArrayList<>();
-//        List<String> columns = SqlParser.getColumns(sqlStr);
-//    }
+    public static List<EFTable> extractDatabaseObjects(String sqlStr) throws JSQLParserException {
+        List<EFEntityBase> result = new ArrayList<>();
+
+        Statement statement = CCJSqlParserUtil.parse(sqlStr);
+        SelectBody selectBody = ((Select) statement).getSelectBody();
+        PlainSelect plainSelect = (PlainSelect) selectBody;
+
+        TableFinder tableFinder = new TableFinder();
+        tableFinder.visit(plainSelect);
+
+        return tableFinder.getTableList();
+    }
 }

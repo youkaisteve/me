@@ -8,9 +8,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ForeignKey extends EntityBase {
+public class EFForeignKey extends EFEntityBase {
     private String foreignKeyName;
-    private int tableSysNo;
-    private int nativeColumnSysNo;
-    private int foreignColumnSysNo;
+    private String tableSysNo;
+    private String nativeColumnSysNo;
+    private String foreignColumnSysNo;
 }

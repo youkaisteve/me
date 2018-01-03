@@ -8,9 +8,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Column extends EntityBase {
-    private int tableSysNo;
+public class EFColumn extends EFEntityBase {
+    private String tableSysNo;
     private String columnName;
+    private String displayName;
     private String columnType;
     private String length;
     private int precision;

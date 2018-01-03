@@ -1,15 +1,20 @@
-import cn.youkai.core.sqlparser.SqlParser;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.sf.jsqlparser.JSQLParserException;
+import cn.youkai.core.sqlparser.dto.EFTable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import cn.youkai.core.sqlparser.SqlParser;
+import net.sf.jsqlparser.JSQLParserException;
+
+import javax.sql.rowset.serial.SerialException;
+import javax.sql.rowset.serial.SerialJavaObject;
 
 /**
  * @author youkai
@@ -18,17 +23,24 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SqlParser.class)
 public class SqlParserTests {
+    private String testSql =
+            "SELECT t1.a as a1,t2.b,t2.c " +
+                    "FROM tab1 t1 " +
+                    "inner join tab2 t2 " +
+                    "on t1.a = t2.b " +
+                    "where t1.a = 11";
+
     @Test
     public void tableNamesTest() throws JSQLParserException {
-        List<String> tableNames = SqlParser.getTableList("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
+        List<String> tableNames = SqlParser.getTableList(testSql);
         assertEquals("tab1", tableNames.get(0));
         assertEquals("tab2", tableNames.get(1));
     }
 
     @Test
     public void getBodyTest() throws JSQLParserException {
-        List<String> body = SqlParser.getColumns("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b");
-        List<String> expected = new ArrayList();
+        List<String> body = SqlParser.getColumns(testSql);
+        List<String> expected = new ArrayList<>();
         expected.add("t1.a");
         expected.add("t2.b");
         expected.add("t2.c");
@@ -37,11 +49,14 @@ public class SqlParserTests {
 
     @Test
     public void print() throws JSQLParserException {
-        SqlParser.printSelect("SELECT t1.a,t2.b,t2.c FROM tab1 t1 inner join tab2 t2 on t1.a = t2.b where t1.a = 11");
+        SqlParser.printSelect(testSql);
     }
 
-    private void getNextLngLat(double lng, double lat, double distance) {
-        
+    @Test
+    public void TableFinderTest() throws JSQLParserException {
+        List<EFTable> tableList = SqlParser.extractDatabaseObjects(testSql);
+        for (EFTable table : tableList) {
+            System.out.println(table.toString());
+        }
     }
-
 }

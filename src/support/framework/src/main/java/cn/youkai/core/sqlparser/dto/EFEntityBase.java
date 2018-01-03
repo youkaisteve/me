@@ -10,6 +10,6 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class EntityBase implements Serializable {
-    private int sysNo;
+public class EFEntityBase implements Serializable {
+    private String sysNo;
 }
