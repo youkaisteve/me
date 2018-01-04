@@ -57,7 +57,6 @@ public class SqlParser {
             }
         }
 
-//        AndExpression whereExpression = (AndExpression)plainSelect.getWhere();
         Expression whereExpression = plainSelect.getWhere();
         System.out.println(whereExpression);
     }
@@ -100,8 +99,6 @@ public class SqlParser {
     }
 
     public static List<EFTable> extractDatabaseObjects(String sqlStr) throws JSQLParserException {
-        List<EFEntityBase> result = new ArrayList<>();
-
         Statement statement = CCJSqlParserUtil.parse(sqlStr);
         SelectBody selectBody = ((Select) statement).getSelectBody();
         PlainSelect plainSelect = (PlainSelect) selectBody;

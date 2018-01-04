@@ -1,13 +1,10 @@
 package cn.youkai.core.sqlparser.extend;
 
 import cn.youkai.core.sqlparser.dto.EFColumn;
-import cn.youkai.core.sqlparser.dto.EFEntityBase;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import net.sf.jsqlparser.expression.Alias;
-import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.*;
-import org.slf4j.event.Level;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -16,6 +13,7 @@ import java.util.logging.Logger;
  * @author youkai
  */
 public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVisitor {
+    private static final String SELECT_EXPRESSION_SPLIT_STR = ".";
     private Logger logger = Logger.getLogger("TableFinder");
     private List<EFTable> tableList = new ArrayList<>();
 
@@ -25,7 +23,7 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
 
     @Override
     public void visit(Table tableName) {
-        logger.info("visit table");
+        logger.info("visit Table");
         EFTable table = new EFTable();
         table.setSysNo(UUID.randomUUID().toString());
         table.setTableName(tableName.getName());
@@ -35,33 +33,39 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
 
     @Override
     public void visit(SubSelect subSelect) {
-
+        logger.info("visit SubSelect");
     }
 
     @Override
     public void visit(SubJoin subjoin) {
-
+        logger.info("visit SubJoin");
     }
 
     @Override
     public void visit(LateralSubSelect lateralSubSelect) {
-
+        logger.info("visit LateralSubSelect");
     }
 
     @Override
     public void visit(ValuesList valuesList) {
-
+        logger.info("visit ValuesList");
     }
 
     @Override
     public void visit(TableFunction tableFunction) {
-
+        logger.info("visit TableFunction");
     }
 
     @Override
     public void visit(PlainSelect plainSelect) {
         logger.info("visit PlainSelect");
         plainSelect.getFromItem().accept(this);
+        List<Join> joins = plainSelect.getJoins();
+        if (null != joins) {
+            joins.forEach(join -> {
+                join.getRightItem().accept(this);
+            });
+        }
         plainSelect.getSelectItems().forEach(selectItem -> selectItem.accept(this));
     }
 
@@ -101,7 +105,7 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
 
         String tableAlias;
         String actualColumn = "";
-        if (expression.contains(".")) {
+        if (expression.contains(SELECT_EXPRESSION_SPLIT_STR)) {
             tableAlias = expression.split("\\.")[0];
             actualColumn = expression.split("\\.")[1];
         } else {
