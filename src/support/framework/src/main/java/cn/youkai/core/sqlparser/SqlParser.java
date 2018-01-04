@@ -3,6 +3,7 @@ package cn.youkai.core.sqlparser;
 import cn.youkai.core.sqlparser.dto.EFEntityBase;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import cn.youkai.core.sqlparser.extend.TableFinder;
+import cn.youkai.core.sqlparser.extend.VisitorContext;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
@@ -98,7 +99,7 @@ public class SqlParser {
         return columns;
     }
 
-    public static List<EFTable> extractDatabaseObjects(String sqlStr) throws JSQLParserException {
+    public static VisitorContext extractDatabaseObjects(String sqlStr) throws JSQLParserException {
         Statement statement = CCJSqlParserUtil.parse(sqlStr);
         SelectBody selectBody = ((Select) statement).getSelectBody();
         PlainSelect plainSelect = (PlainSelect) selectBody;
@@ -106,6 +107,6 @@ public class SqlParser {
         TableFinder tableFinder = new TableFinder();
         tableFinder.visit(plainSelect);
 
-        return tableFinder.getTableList();
+        return tableFinder.getContext();
     }
 }

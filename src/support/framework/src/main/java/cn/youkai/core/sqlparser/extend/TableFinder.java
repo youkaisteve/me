@@ -1,5 +1,6 @@
 package cn.youkai.core.sqlparser.extend;
 
+import cn.youkai.core.sqlparser.Consts;
 import cn.youkai.core.sqlparser.dto.EFColumn;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import net.sf.jsqlparser.expression.Alias;
@@ -13,12 +14,16 @@ import java.util.logging.Logger;
  * @author youkai
  */
 public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVisitor {
-    private static final String SELECT_EXPRESSION_SPLIT_STR = ".";
     private Logger logger = Logger.getLogger("TableFinder");
-    private List<EFTable> tableList = new ArrayList<>();
 
-    public List<EFTable> getTableList() {
-        return tableList;
+    VisitorContext visitorContext;
+
+    public TableFinder() {
+        visitorContext = new VisitorContext();
+    }
+
+    public VisitorContext getContext() {
+        return visitorContext;
     }
 
     @Override
@@ -28,7 +33,8 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         table.setSysNo(UUID.randomUUID().toString());
         table.setTableName(tableName.getName());
         table.setAliasName(tableName.getAlias().getName());
-        tableList.add(table);
+        table.setColumns(new ArrayList<>());
+        visitorContext.getTableList().add(table);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         if (null != joins) {
             joins.forEach(join -> {
                 join.getRightItem().accept(this);
+                join.getOnExpression().accept(new OnExpressionFinder(visitorContext));
             });
         }
         plainSelect.getSelectItems().forEach(selectItem -> selectItem.accept(this));
@@ -105,7 +112,7 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
 
         String tableAlias;
         String actualColumn = "";
-        if (expression.contains(SELECT_EXPRESSION_SPLIT_STR)) {
+        if (expression.contains(Consts.SELECT_EXPRESSION_SPLIT_STR)) {
             tableAlias = expression.split("\\.")[0];
             actualColumn = expression.split("\\.")[1];
         } else {
@@ -113,9 +120,9 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         }
 
         //第一个table为from table
-        EFTable table = tableList.get(0);
+        EFTable table = visitorContext.getTableList().get(0);
         if (null != tableAlias) {
-            Optional<EFTable> optional = tableList.stream()
+            Optional<EFTable> optional = visitorContext.getTableList().stream()
                     .filter(t -> tableAlias.equalsIgnoreCase(t.getAliasName()))
                     .findFirst();
             if (optional.isPresent()) {
@@ -126,6 +133,13 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         if (null == table.getColumns()) {
             table.setColumns(new ArrayList<>());
         }
+        //如果已经存在该Column，则不需要再去添加了
+        String finalActualColumn = actualColumn;
+        Optional<EFColumn> columnOptional = table.getColumns().stream().filter(t -> finalActualColumn.equals(t.getColumnName())).findFirst();
+        if (columnOptional.isPresent()) {
+            return;
+        }
+
         EFColumn newColumn = new EFColumn();
         newColumn.setSysNo(UUID.randomUUID().toString());
         newColumn.setColumnName(actualColumn);

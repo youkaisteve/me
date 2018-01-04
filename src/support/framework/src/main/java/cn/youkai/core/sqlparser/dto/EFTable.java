@@ -25,7 +25,7 @@ public class EFTable extends EFEntityBase {
         String lineSeprator = System.getProperty("line.separator");
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(String.format("====================%s(%s)=====================%s", this.getTableName(), this.getSysNo(), lineSeprator));
+        stringBuilder.append(String.format("*********************%s(%s)*********************%s", this.getTableName(), this.getSysNo(), lineSeprator));
 
         stringBuilder.append(String.format("COLUMNS:%s", lineSeprator));
         if (null != columns) {
@@ -33,7 +33,7 @@ public class EFTable extends EFEntityBase {
                 stringBuilder.append(String.format("Name:%s,DisplayName:%s%s", column.getColumnName(), column.getDisplayName(), lineSeprator));
             }
         }
-        stringBuilder.append(String.format("====================%s(%s)=====================%s", this.getTableName(), this.getSysNo(), lineSeprator));
+        stringBuilder.append(String.format("*********************%s(%s)*********************%s", this.getTableName(), this.getSysNo(), lineSeprator));
 
         return stringBuilder.toString();
     }
