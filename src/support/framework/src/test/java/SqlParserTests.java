@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertEquals;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import cn.youkai.core.sqlparser.SqlParser;
 import net.sf.jsqlparser.JSQLParserException;
-
-import javax.sql.rowset.serial.SerialException;
-import javax.sql.rowset.serial.SerialJavaObject;
 
 /**
  * @author youkai
@@ -32,24 +28,7 @@ public class SqlParserTests {
                     "on t1.b = t2.C " +
                     "inner join tab3 t3 " +
                     "on t2.D = t3.x AND t1.a = t3.y " +
-                    "where t1.c = 11";
-
-    @Test
-    public void tableNamesTest() throws JSQLParserException {
-        List<String> tableNames = SqlParser.getTableList(testSql);
-        assertEquals("tab1", tableNames.get(0));
-        assertEquals("tab2", tableNames.get(1));
-    }
-
-    @Test
-    public void getBodyTest() throws JSQLParserException {
-        List<String> body = SqlParser.getColumns(testSql);
-        List<String> expected = new ArrayList<>();
-        expected.add("t1.a");
-        expected.add("t2.b");
-        expected.add("t2.c");
-        assertEquals(expected, body);
-    }
+                    "where t1.a = 11 AND t3.y = 12";
 
     @Test
     public void print() throws JSQLParserException {

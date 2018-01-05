@@ -22,12 +22,12 @@ import java.util.logging.Logger;
 
 @Getter
 @Setter
-public class OnExpressionFinder implements ExpressionVisitor {
+public class ExpressionFinder implements ExpressionVisitor {
     private Logger logger = Logger.getLogger("OnExpressionFinder");
 
     VisitorContext _visitorContext;
 
-    public OnExpressionFinder(VisitorContext visitorContext) {
+    public ExpressionFinder(VisitorContext visitorContext) {
         _visitorContext = visitorContext;
     }
 
@@ -124,7 +124,8 @@ public class OnExpressionFinder implements ExpressionVisitor {
 
     @Override
     public void visit(OrExpression orExpression) {
-
+        orExpression.getLeftExpression().accept(this);
+        orExpression.getRightExpression().accept(this);
     }
 
     @Override

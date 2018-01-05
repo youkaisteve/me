@@ -1,3 +1,8 @@
+/*
+ * where条件中出现的字段不纳入表字段范围，所以，需要的字段必须出现在select 和 join 条件中
+ *
+ */
+
 package cn.youkai.core.sqlparser.extend;
 
 import cn.youkai.core.sqlparser.Consts;
@@ -5,6 +10,8 @@ import cn.youkai.core.sqlparser.dto.EFColumn;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.create.view.CreateView;
 import net.sf.jsqlparser.statement.select.*;
 
 import java.util.*;
@@ -70,10 +77,11 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         if (null != joins) {
             joins.forEach(join -> {
                 join.getRightItem().accept(this);
-                join.getOnExpression().accept(new OnExpressionFinder(visitorContext));
+                join.getOnExpression().accept(new ExpressionFinder(visitorContext));
             });
         }
         plainSelect.getSelectItems().forEach(selectItem -> selectItem.accept(this));
+//        plainSelect.getWhere().accept(new ExpressionFinder(visitorContext));
     }
 
     @Override
