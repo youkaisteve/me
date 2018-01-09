@@ -11,8 +11,7 @@ public enum EFDataType {
 
     private int nCode;
 
-    // 构造函数，枚举类型只能为私有
-    private EFDataType(int _nCode) {
+    EFDataType(int _nCode) {
         this.nCode = _nCode;
     }
 

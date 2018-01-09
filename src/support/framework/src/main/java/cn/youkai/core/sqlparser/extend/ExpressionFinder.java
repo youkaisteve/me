@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Getter
@@ -141,7 +142,7 @@ public class ExpressionFinder implements ExpressionVisitor {
      */
     @Override
     public void visit(EqualsTo equalsTo) {
-        logger.info("visit EqualsTo");
+        logger.log(Level.FINE,"visit EqualsTo");
         List<String[]> tableColumnExpression = new ArrayList<>();
         String leftExpression = equalsTo.getLeftExpression().toString();
         String rightExpression = equalsTo.getRightExpression().toString();
