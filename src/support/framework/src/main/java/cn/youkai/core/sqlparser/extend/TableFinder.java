@@ -6,6 +6,7 @@
 package cn.youkai.core.sqlparser.extend;
 
 import cn.youkai.core.sqlparser.Consts;
+import cn.youkai.core.sqlparser.Util;
 import cn.youkai.core.sqlparser.dto.EFColumn;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import net.sf.jsqlparser.expression.Alias;
@@ -121,8 +122,8 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
         String tableAlias;
         String actualColumn = "";
         if (expression.contains(Consts.SELECT_EXPRESSION_SPLIT_STR)) {
-            tableAlias = expression.split("\\.")[0];
-            actualColumn = expression.split("\\.")[1];
+            tableAlias = expression.split("\\" + Consts.SELECT_EXPRESSION_SPLIT_STR)[0];
+            actualColumn = expression.split("\\" + Consts.SELECT_EXPRESSION_SPLIT_STR)[1];
         } else {
             tableAlias = null;
         }
@@ -142,7 +143,7 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
             table.setColumns(new ArrayList<>());
         }
         //如果已经存在该Column，则不需要再去添加了
-        String finalActualColumn = actualColumn;
+        String finalActualColumn = Util.getColumnName(actualColumn);
         Optional<EFColumn> columnOptional = table.getColumns().stream().filter(t -> finalActualColumn.equals(t.getColumnName())).findFirst();
         if (columnOptional.isPresent()) {
             return;
@@ -150,8 +151,10 @@ public class TableFinder implements SelectItemVisitor, FromItemVisitor, SelectVi
 
         EFColumn newColumn = new EFColumn();
         newColumn.setSysNo(UUID.randomUUID().toString());
-        newColumn.setColumnName(actualColumn);
-        newColumn.setDisplayName(actualAlias.isEmpty() ? actualColumn : actualAlias);
+        newColumn.setColumnName(finalActualColumn);
+        newColumn.setColumnType(Util.getColumnDataType(actualColumn));
+        newColumn.setLength(Util.getColumnLength(actualColumn));
+        newColumn.setDisplayName(actualAlias.isEmpty() ? finalActualColumn : actualAlias);
         table.getColumns().add(newColumn);
     }
 }

@@ -170,13 +170,15 @@ public class ExpressionFinder implements ExpressionVisitor {
             }
 
             if (null != table) {
-                Optional<EFColumn> findColumn = table.getColumns().stream().filter(c -> item[1].equals(c.getColumnName())).findFirst();
+                String colName = Util.getColumnName(item[1]);
+                Optional<EFColumn> findColumn = table.getColumns().stream().filter(c -> colName.equals(c.getColumnName())).findFirst();
                 EFColumn newColumn;
                 if (!findColumn.isPresent()) {
                     newColumn = new EFColumn();
                     newColumn.setSysNo(UUID.randomUUID().toString());
-                    newColumn.setColumnName(item[1]);
-                    newColumn.setDisplayName("");
+                    newColumn.setColumnName(colName);
+                    newColumn.setLength(Util.getColumnLength(item[1]));
+                    newColumn.setColumnType(Util.getColumnDataType(item[1]));
                     table.getColumns().add(newColumn);
                 } else {
                     newColumn = findColumn.get();

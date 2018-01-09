@@ -1,5 +1,6 @@
 package cn.youkai.core.sqlparser;
 
+import cn.youkai.core.sqlparser.dto.EFColumn;
 import cn.youkai.core.sqlparser.dto.EFEntityBase;
 import cn.youkai.core.sqlparser.dto.EFTable;
 import cn.youkai.core.sqlparser.extend.TableFinder;
@@ -8,7 +9,11 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.create.table.ColDataType;
+import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
@@ -108,5 +113,34 @@ public class SqlParser {
         tableFinder.visit(plainSelect);
 
         return tableFinder.getContext();
+    }
+
+    public static String getCreateSql(EFTable efTable) {
+        Table table = new Table();
+        table.setName(efTable.getTableName());
+        table.setAlias(new Alias(efTable.getAliasName()));
+
+        CreateTable createTable = new CreateTable();
+        createTable.setTable(table);
+        createTable.setIfNotExists(true);
+
+        List<ColumnDefinition> columnDefinitions = new ArrayList<>();
+        for (EFColumn efColumn : efTable.getColumns()) {
+            ColumnDefinition tempColumnDefinition = new ColumnDefinition();
+            tempColumnDefinition.setColumnName(efColumn.getColumnName());
+
+            ColDataType tempColDataType = new ColDataType();
+            tempColDataType.setDataType(efColumn.colDataType());
+            tempColumnDefinition.setColDataType(tempColDataType);
+
+            List<String> tempColumnSpecStrings = new ArrayList<>();
+            tempColumnSpecStrings.add(efColumn.getComment());
+            tempColumnDefinition.setColumnSpecStrings(tempColumnSpecStrings);
+            columnDefinitions.add(tempColumnDefinition);
+        }
+
+        createTable.setColumnDefinitions(columnDefinitions);
+
+        return createTable.toString();
     }
 }
